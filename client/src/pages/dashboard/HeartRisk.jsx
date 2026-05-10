@@ -399,32 +399,44 @@ export default function HeartRisk() {
                 const rc = riskColor(item.risk);
                 return (
                   <div key={item._id || i} style={{
-                    display: "flex", alignItems: "center", gap: "16px",
-                    padding: "18px 20px", borderRadius: "16px",
+                    display: "flex", flexDirection: "column", gap: "10px",
+                    padding: "16px", borderRadius: "16px",
                     background: "#f8fffe", border: `1.5px solid ${T.tealLight}`,
                   }}>
-                    <div style={{
-                      width: "48px", height: "48px", borderRadius: "14px",
-                      background: rc.bg, display: "flex", alignItems: "center",
-                      justifyContent: "center", fontSize: "22px", flexShrink: 0,
-                    }}>
-                      {item.risk === 1 ? "⚠️" : "✅"}
-                    </div>
-
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: "800", fontSize: "15px", color: rc.color }}>
-                        {item.label}
+                    {/* Top row: icon + label + date */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                      <div style={{
+                        width: "42px", height: "42px", borderRadius: "12px",
+                        background: rc.bg, display: "flex", alignItems: "center",
+                        justifyContent: "center", fontSize: "20px", flexShrink: 0,
+                      }}>
+                        {item.risk === 1 ? "⚠️" : "✅"}
                       </div>
-                      <div style={{ fontSize: "12px", color: T.muted, marginTop: "3px" }}>
-                        Age {item.age} · BMI {item.BMI} · BP {item.sysBP}/{item.diaBP} mmHg
-                        {item.probability !== null && ` · Risk probability: ${item.probability}%`}
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: "800", fontSize: "15px", color: rc.color }}>
+                          {item.label}
+                        </div>
+                        <div style={{ fontSize: "11px", color: T.muted, marginTop: "2px" }}>
+                          {fmtDate(item.createdAt)}
+                        </div>
                       </div>
                     </div>
-
+                    {/* Bottom row: stats */}
                     <div style={{
-                      fontSize: "12px", color: T.muted, textAlign: "right", flexShrink: 0,
+                      display: "flex", flexWrap: "wrap", gap: "6px",
                     }}>
-                      {fmtDate(item.createdAt)}
+                      {[
+                        `Age ${item.age}`,
+                        `BMI ${item.BMI}`,
+                        `BP ${item.sysBP}/${item.diaBP}`,
+                        item.probability !== null ? `Risk ${item.probability}%` : null,
+                      ].filter(Boolean).map((stat, si) => (
+                        <span key={si} style={{
+                          padding: "4px 10px", borderRadius: "99px",
+                          background: T.tealLight, color: T.teal,
+                          fontSize: "11px", fontWeight: "700",
+                        }}>{stat}</span>
+                      ))}
                     </div>
                   </div>
                 );
