@@ -20,12 +20,15 @@ startScheduler();
 const app  = express();
 const PORT = process.env.PORT || 5000;
 
+// ── Trust Railway/Render proxy ───────────────────────────────────────────────
+app.set("trust proxy", 1);
+
 // ── Security headers ────────────────────────────────────────────────────────
 app.use(helmet());
 
 // ── CORS ────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174", "https://medi-track-teal.vercel.app",],
+  origin: ["http://localhost:5173", "http://localhost:5174"],
   credentials: true,
 }));
 
