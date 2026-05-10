@@ -25,7 +25,7 @@ app.use(helmet());
 
 // ── CORS ────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174", "https://medi-track-teal.vercel.app",],
+  origin: ["http://localhost:5173", "http://localhost:5174", "https://medi-track-9ouage3o3-fatima-ranas-projects.vercel.app/",],
   credentials: true,
 }));
 
