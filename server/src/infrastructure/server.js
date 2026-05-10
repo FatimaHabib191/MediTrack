@@ -28,7 +28,11 @@ app.use(helmet());
 
 // ── CORS ────────────────────────────────────────────────────────────────────
 app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:5174"],
+  origin: [
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "https://medi-track-teal.vercel.app",
+  ],
   credentials: true,
 }));
 
@@ -36,23 +40,20 @@ app.use(cors({
 app.use(express.json());
 
 // ── NoSQL injection sanitization ────────────────────────────────────────────
-// Strips keys containing $ or . from req.body, req.params, req.query
 app.use(mongoSanitize());
 
 // ── Rate limiting ───────────────────────────────────────────────────────────
-// General API limiter — 100 requests per 15 minutes per IP
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: 15 * 60 * 1000,  // 15 minutes
+  max: 500,                   // generous limit for normal use
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: "Too many requests, please try again later." },
 });
 
-// Stricter limiter for auth routes — 20 requests per 15 minutes per IP
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 50,                    // enough for normal login attempts
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, message: "Too many login attempts, please try again later." },
