@@ -171,15 +171,15 @@ export default function SideEffects({ meds }) {
               return (
                 <div
                   key={se._id}
-                  style={{ background: "#f8fffe", borderRadius: "18px", padding: "18px 20px", border: "1.5px solid #e6f7f5", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}
+                  style={{ background: "#f8fffe", borderRadius: "18px", padding: "18px 16px", border: "1.5px solid #e6f7f5", display: "flex", alignItems: "center", gap: "10px", flexWrap: "nowrap", overflow: "hidden" }}
                 >
                   <div style={{ width: "48px", height: "48px", borderRadius: "14px", background: "#fff4ed", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", flexShrink: 0 }}>
                     ⚡
                   </div>
 
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: "15px", fontWeight: "800", color: "#0f4a47" }}>{se.effect}</div>
-                    <div style={{ fontSize: "13px", color: "#6b9e9a", marginTop: "4px", wordBreak: "break-word" }}>
+                  <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
+                    <div style={{ fontSize: "15px", fontWeight: "800", color: "#0f4a47", whiteSpace: "normal", wordBreak: "break-word" }}>{se.effect}</div>
+                    <div style={{ fontSize: "13px", color: "#6b9e9a", marginTop: "4px", whiteSpace: "normal", wordBreak: "break-word", overflowWrap: "break-word" }}>
                       {se.med} · {new Date(se.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </div>
                   </div>
