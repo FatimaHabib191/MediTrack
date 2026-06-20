@@ -7,10 +7,9 @@ const severityColor = (s) =>
                      { bg: "#fee2e2", color: "#991b1b" };
 
 export default function SideEffects({ meds }) {
-  const [list, setList]           = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [list, setList]         = useState([]);
   const [newEffect, setNewEffect] = useState({ med: "", effect: "", severity: "Mild" });
-  const [loading, setLoading]     = useState(false);
+  const [loading, setLoading]   = useState(false);
 
   const inputStyle = {
     width:        "100%",
@@ -23,6 +22,14 @@ export default function SideEffects({ meds }) {
     color:        "#0f4a47",
     background:   "#f8fffe",
     boxSizing:    "border-box",
+  };
+
+  const labelStyle = {
+    fontSize:      "14px",
+    fontWeight:    "700",
+    color:         "#0f4a47",
+    display:       "block",
+    marginBottom:  "8px",
   };
 
   useEffect(() => {
@@ -44,7 +51,6 @@ export default function SideEffects({ meds }) {
       const res = await logSideEffectAPI(newEffect);
       setList(prev => [res.data, ...prev]);
       setNewEffect({ med: "", effect: "", severity: "Mild" });
-      setShowModal(false);
     } catch (err) {
       console.error("Failed to log side effect:", err);
     } finally {
@@ -62,151 +68,139 @@ export default function SideEffects({ meds }) {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
 
-      {/* Log button */}
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "24px" }}>
-        <button
-          onClick={() => setShowModal(true)}
-          style={{ background: "#f97316", color: "#fff", border: "none", borderRadius: "16px", padding: "16px 32px", fontSize: "15px", fontWeight: "700", fontFamily: "inherit", cursor: "pointer" }}
-        >
-          + Log a Side Effect
-        </button>
-      </div>
-
-      {/* List */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-
-        {list.length === 0 && (
-          <div style={{ textAlign: "center", padding: "48px 0", color: "#9bbcba" }}>
-            <div style={{ fontSize: "40px", marginBottom: "12px" }}>⚡</div>
-            <div style={{ fontSize: "14px", fontWeight: "600" }}>No side effects logged yet</div>
+      {/* ── Add form ── */}
+      <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
+          <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: "#fff4ed", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>⚡</div>
+          <div>
+            <h2 style={{ fontSize: "17px", fontWeight: "800", color: "#0f4a47", margin: 0 }}>Log a Side Effect</h2>
+            <p style={{ fontSize: "12px", color: "#6b9e9a", marginTop: "2px" }}>Record any symptoms or reactions</p>
           </div>
-        )}
+        </div>
 
-        {list.map(se => {
-          const sc = severityColor(se.severity);
-          return (
-            <div
-              key={se._id}
-              style={{ background: "#fff", borderRadius: "20px", padding: "20px 24px", boxShadow: "0 2px 10px rgba(0,0,0,0.04)", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+
+          {/* Medication */}
+          <div>
+            <label style={labelStyle}>Which Medication?</label>
+            <select
+              value={newEffect.med}
+              onChange={e => setNewEffect(p => ({ ...p, med: e.target.value }))}
+              style={{ ...inputStyle, appearance: "auto" }}
             >
-              {/* Icon */}
-              <div style={{ width: "52px", height: "52px", borderRadius: "16px", background: "#fff4ed", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", flexShrink: 0 }}>
-                ⚡
-              </div>
+              <option value="">Select a medication</option>
+              {meds.map(m => (
+                <option key={m._id || m.id} value={m.name}>{m.name}</option>
+              ))}
+            </select>
+          </div>
 
-              {/* Info */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: "15px", fontWeight: "800", color: "#0f4a47" }}>{se.effect}</div>
-                <div style={{ fontSize: "13px", color: "#6b9e9a", marginTop: "4px", wordBreak: "break-word" }}>
-                  {se.med} · {new Date(se.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                </div>
-              </div>
+          {/* Effect */}
+          <div>
+            <label style={labelStyle}>What did you feel?</label>
+            <input
+              type="text"
+              placeholder="e.g. Nausea, Dizziness, Headache"
+              value={newEffect.effect}
+              onChange={e => setNewEffect(p => ({ ...p, effect: e.target.value }))}
+              style={inputStyle}
+            />
+          </div>
 
-              {/* Severity badge */}
-              <span style={{ padding: "8px 20px", borderRadius: "99px", fontSize: "13px", fontWeight: "700", background: sc.bg, color: sc.color, flexShrink: 0 }}>
-                {se.severity}
-              </span>
-
-              {/* Delete button — fixed size box so it never overflows */}
-              <button
-                onClick={() => remove(se._id)}
-                style={{ width: "42px", height: "42px", borderRadius: "12px", border: "1.5px solid #fecaca", background: "#fff5f5", cursor: "pointer", fontSize: "20px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
-              >
-                🗑
-              </button>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Modal */}
-      {showModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.35)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50, padding: "16px" }}>
-          <div
-            className="mt-modal-box"
-            style={{ width: "100%", maxWidth: "480px", maxHeight: "90vh", overflowY: "auto" }}
-          >
-            <h3 style={{ fontSize: "20px", fontWeight: "800", color: "#0f4a47", marginBottom: "28px" }}>
-              Log a Side Effect
-            </h3>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-
-              {/* Medication */}
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: "700", color: "#6b9e9a", display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  Which Medication?
-                </label>
-                <select
-                  value={newEffect.med}
-                  onChange={e => setNewEffect(p => ({ ...p, med: e.target.value }))}
-                  style={{ ...inputStyle, appearance: "auto" }}
-                >
-                  <option value="">Select a medication</option>
-                  {meds.map(m => (
-                    <option key={m._id || m.id} value={m.name}>{m.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Effect */}
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: "700", color: "#6b9e9a", display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  What did you feel?
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Nausea, Dizziness, Headache"
-                  value={newEffect.effect}
-                  onChange={e => setNewEffect(p => ({ ...p, effect: e.target.value }))}
-                  style={inputStyle}
-                />
-              </div>
-
-              {/* Severity */}
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: "700", color: "#6b9e9a", display: "block", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  How severe was it?
-                </label>
-                <div style={{ display: "flex", gap: "10px" }}>
-                  {["Mild", "Moderate", "Severe"].map(s => {
-                    const sc     = severityColor(s);
-                    const active = newEffect.severity === s;
-                    return (
-                      <button
-                        key={s}
-                        onClick={() => setNewEffect(p => ({ ...p, severity: s }))}
-                        style={{ flex: 1, padding: "14px 8px", borderRadius: "14px", border: `3px solid ${active ? sc.color : "transparent"}`, background: sc.bg, color: sc.color, fontFamily: "inherit", fontSize: "14px", fontWeight: "700", cursor: "pointer", transition: "all 0.15s" }}
-                      >
-                        {s}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div style={{ display: "flex", gap: "12px", marginTop: "28px" }}>
-              <button
-                onClick={() => { setShowModal(false); setNewEffect({ med: "", effect: "", severity: "Mild" }); }}
-                style={{ flex: 1, padding: "15px", borderRadius: "14px", border: "2px solid #d1e9e7", background: "#fff", fontSize: "15px", fontWeight: "700", color: "#6b9e9a", fontFamily: "inherit", cursor: "pointer" }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={save}
-                disabled={loading}
-                style={{ flex: 1, padding: "15px", borderRadius: "14px", border: "none", background: loading ? "#b2d8d5" : "#f97316", fontSize: "15px", fontWeight: "700", color: "#fff", fontFamily: "inherit", cursor: loading ? "not-allowed" : "pointer" }}
-              >
-                {loading ? "Saving..." : "Save"}
-              </button>
+          {/* Severity */}
+          <div>
+            <label style={labelStyle}>How severe was it?</label>
+            <div style={{ display: "flex", gap: "10px" }}>
+              {["Mild", "Moderate", "Severe"].map(s => {
+                const sc     = severityColor(s);
+                const active = newEffect.severity === s;
+                return (
+                  <button
+                    key={s}
+                    onClick={() => setNewEffect(p => ({ ...p, severity: s }))}
+                    style={{ flex: 1, padding: "14px 8px", borderRadius: "14px", border: `3px solid ${active ? sc.color : "transparent"}`, background: sc.bg, color: sc.color, fontFamily: "inherit", fontSize: "14px", fontWeight: "700", cursor: "pointer", transition: "all 0.15s" }}
+                  >
+                    {s}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
-      )}
+
+        {/* Buttons */}
+        <div style={{ display: "flex", gap: "12px", marginTop: "24px", maxWidth: "400px" }}>
+          <button
+            onClick={() => setNewEffect({ med: "", effect: "", severity: "Mild" })}
+            style={{ flex: 1, padding: "13px", borderRadius: "12px", border: "2px solid #d1e9e7", background: "#fff", fontSize: "14px", fontWeight: "700", color: "#6b9e9a", fontFamily: "inherit", cursor: "pointer" }}
+          >
+            Clear
+          </button>
+          <button
+            onClick={save}
+            disabled={loading}
+            style={{ flex: 2, padding: "13px", borderRadius: "12px", border: "none", background: loading ? "#b2d8d5" : "#f97316", fontSize: "14px", fontWeight: "700", color: "#fff", fontFamily: "inherit", cursor: loading ? "not-allowed" : "pointer" }}
+          >
+            {loading ? "Saving..." : "⚡ Save Side Effect"}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Logged side effects list ── */}
+      <div style={{ background: "#fff", borderRadius: "24px", padding: "32px", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
+          <div style={{ width: "44px", height: "44px", borderRadius: "14px", background: "#fee2e2", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>📋</div>
+          <div>
+            <h2 style={{ fontSize: "17px", fontWeight: "800", color: "#0f4a47", margin: 0 }}>Logged Side Effects</h2>
+            <p style={{ fontSize: "12px", color: "#6b9e9a", marginTop: "2px" }}>{list.length} effect{list.length !== 1 ? "s" : ""} recorded</p>
+          </div>
+        </div>
+
+        {list.length === 0 ? (
+          <div style={{ textAlign: "center", padding: "48px 0", color: "#9bbcba" }}>
+            <div style={{ fontSize: "40px", marginBottom: "12px" }}>⚡</div>
+            <div style={{ fontSize: "14px", fontWeight: "600" }}>No side effects logged yet</div>
+            <div style={{ fontSize: "13px", marginTop: "6px" }}>Use the form above to log a symptom.</div>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {list.map(se => {
+              const sc = severityColor(se.severity);
+              return (
+                <div
+                  key={se._id}
+                  style={{ background: "#f8fffe", borderRadius: "18px", padding: "18px 20px", border: "1.5px solid #e6f7f5", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}
+                >
+                  <div style={{ width: "48px", height: "48px", borderRadius: "14px", background: "#fff4ed", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px", flexShrink: 0 }}>
+                    ⚡
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: "15px", fontWeight: "800", color: "#0f4a47" }}>{se.effect}</div>
+                    <div style={{ fontSize: "13px", color: "#6b9e9a", marginTop: "4px", wordBreak: "break-word" }}>
+                      {se.med} · {new Date(se.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </div>
+                  </div>
+
+                  <span style={{ padding: "8px 18px", borderRadius: "99px", fontSize: "13px", fontWeight: "700", background: sc.bg, color: sc.color, flexShrink: 0 }}>
+                    {se.severity}
+                  </span>
+
+                  <button
+                    onClick={() => remove(se._id)}
+                    style={{ width: "40px", height: "40px", borderRadius: "12px", border: "1.5px solid #fecaca", background: "#fff5f5", cursor: "pointer", fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
+                  >
+                    🗑
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
     </div>
   );
 }
