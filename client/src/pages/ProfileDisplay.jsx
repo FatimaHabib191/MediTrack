@@ -1,46 +1,96 @@
 import { T } from "../constants/theme";
-import OBtn from "../components/common/OBtn";
+
+function Icon({ d, size = 18, color = "currentColor", stroke = 2 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round">
+      <path d={d} />
+    </svg>
+  );
+}
 
 export default function ProfileDisplay({ user, onEnterApp }) {
-  const genderIcon = user.gender === "Male" ? "👨" : user.gender === "Female" ? "👩" : "🧑";
-  const initials   = (user.firstName[0] || "") + (user.lastName[0] || "");
+  const initials = ((user.firstName[0] || "") + (user.lastName[0] || "")).toUpperCase();
+  const genderIconD = user.gender === "Male"
+    ? "M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z M5 22c0-4 3.1-7 7-7s7 3.1 7 7"
+    : user.gender === "Female"
+    ? "M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z M5 22c0-4 3.1-7 7-7s7 3.1 7 7 M12 17v5 M9 19h6"
+    : "M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z M12 17v5";
+
+  const infoCards = [
+    { iconD: genderIconD, label: user.gender },
+    { iconD: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z", label: `Age ${user.age}` },
+    { iconD: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "Active" },
+  ];
 
   return (
-    <div style={{ position: "fixed", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Sans', sans-serif", overflow: "auto" }}>
-      <div style={{ position: "fixed", inset: 0, background: `linear-gradient(145deg, ${T.tealDark} 0%, ${T.teal} 55%, #1dd4c6 100%)`, zIndex: 0 }} />
-      <div style={{ position: "fixed", inset: 0, overflow: "hidden", pointerEvents: "none", zIndex: 1 }}>
-        {[320, 520, 720].map((s, i) => (
-          <div key={s} style={{ position: "absolute", top: "50%", left: "50%", width: `${s}px`, height: `${s}px`, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.08)", transform: "translate(-50%,-50%)", animation: `floatA ${7 + i * 2}s ease-in-out infinite ${i * 1.5}s` }} />
-        ))}
-      </div>
+    <div style={{ minHeight: "100vh", background: "#f5f7fa", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
+      <div style={{ width: "100%", maxWidth: "400px" }}>
+        <div style={{ background: "#fff", borderRadius: "28px", overflow: "hidden", boxShadow: "0 8px 40px rgba(0,0,0,0.10)" }}>
 
-      <div style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: "460px", margin: "40px 24px", background: "rgba(255,255,255,0.96)", borderRadius: "28px", padding: "52px 44px", boxShadow: "0 32px 80px rgba(0,0,0,0.25)", backdropFilter: "blur(20px)", textAlign: "center" }}>
-        <div className="scale-in" style={{ width: "76px", height: "76px", borderRadius: "24px", background: `linear-gradient(135deg, ${T.teal}, ${T.tealDark})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "36px", margin: "0 auto 24px", boxShadow: "0 12px 36px rgba(15,155,142,0.45)", color: "#fff", fontWeight: "900" }}>✓</div>
+          {/* Teal banner */}
+          <div style={{ background: `linear-gradient(140deg, ${T.tealDark} 0%, ${T.teal} 100%)`, padding: "36px 28px 60px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+            {/* Decorative plus signs */}
+            {[[30,20],[300,14],[16,80],[320,70],[160,10]].map(([x,y],i) => (
+              <span key={i} style={{ position: "absolute", left: x, top: y, fontSize: "18px", color: "rgba(255,255,255,0.15)", fontWeight: "300" }}>+</span>
+            ))}
+            {/* Confetti dots */}
+            {[["#f59e0b",60,30],["#a78bfa",80,50],["#f472b6",240,28],["#34d399",260,50],["#60a5fa",180,18],["#fb923c",140,45]].map(([c,x,y],i) => (
+              <div key={i} style={{ position: "absolute", left: x, top: y, width: "8px", height: "8px", borderRadius: i%2===0 ? "2px" : "50%", background: c, transform: `rotate(${i*30}deg)` }} />
+            ))}
 
-        <div className="fade-up-1">
-          <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "30px", fontWeight: "900", color: T.text, margin: "0 0 8px" }}>You're all set!</h1>
-          <p style={{ fontSize: "15px", color: T.muted, margin: "0 0 36px" }}>Here's your profile summary</p>
-        </div>
-
-        <div className="fade-up-2" style={{ width: "100px", height: "100px", borderRadius: "30px", background: `linear-gradient(135deg, ${T.teal}, ${T.tealDark})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "36px", fontWeight: "800", color: "#fff", margin: "0 auto 20px", boxShadow: "0 12px 36px rgba(15,155,142,0.45)" }}>
-          {initials}
-        </div>
-
-        <div className="fade-up-2" style={{ marginBottom: "28px" }}>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "24px", fontWeight: "900", color: T.text, margin: "0 0 6px" }}>{user.firstName} {user.lastName}</h2>
-          <p style={{ fontSize: "13px", color: T.muted, margin: 0 }}>{user.email}</p>
-        </div>
-
-        <div className="fade-up-3" style={{ display: "flex", justifyContent: "center", gap: "10px", marginBottom: "36px", flexWrap: "wrap" }}>
-          {[{ icon: genderIcon, label: user.gender }, { icon: "🎂", label: `Age ${user.age}` }, { icon: "✅", label: "Active" }].map(p => (
-            <div key={p.label} style={{ display: "flex", alignItems: "center", gap: "7px", padding: "10px 18px", borderRadius: "99px", background: T.tealLight, border: `1.5px solid ${T.teal}30`, fontSize: "14px", fontWeight: "600", color: T.text }}>
-              {p.icon} {p.label}
+            {/* Check circle */}
+            <div style={{ width: "72px", height: "72px", borderRadius: "50%", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", boxShadow: "0 4px 16px rgba(0,0,0,0.12)" }}>
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+                <path d="M20 6L9 17l-5-5" stroke={T.teal} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
-          ))}
-        </div>
+            <h2 style={{ fontSize: "24px", fontWeight: "800", color: "#fff", margin: "0 0 6px" }}>You're all set!</h2>
+            <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", margin: 0 }}>Here's your profile summary</p>
+          </div>
 
-        <div className="fade-up-4">
-          <OBtn label="Go to Dashboard →" onClick={onEnterApp} />
+          {/* White card overlapping */}
+          <div style={{ margin: "-28px 16px 0", background: "#fff", borderRadius: "20px", boxShadow: "0 4px 20px rgba(0,0,0,0.08)", padding: "24px 20px 20px", position: "relative", zIndex: 1 }}>
+            {/* Avatar */}
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "16px" }}>
+              <div style={{ width: "68px", height: "68px", borderRadius: "18px", background: `linear-gradient(135deg, ${T.teal}, ${T.tealDark})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", fontWeight: "800", color: "#fff", marginBottom: "12px" }}>
+                {initials}
+              </div>
+              <h3 style={{ fontSize: "20px", fontWeight: "800", color: "#1a1a2e", margin: "0 0 3px" }}>{user.firstName} {user.lastName}</h3>
+              <p style={{ fontSize: "13px", color: "#6b7280", margin: "0 0 14px" }}>{user.email}</p>
+
+              {/* Info pills */}
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}>
+                {infoCards.map(({ iconD, label }, i) => (
+                  <div key={label} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "5px", padding: "10px 16px", borderRadius: "12px", border: `1.5px solid ${i === 2 ? "#dcfce7" : "#f3f4f6"}`, background: i === 2 ? "#f0fdf4" : "#fafbfc", minWidth: "70px" }}>
+                    <Icon d={iconD} size={18} color={i === 2 ? "#16a34a" : T.teal} stroke={1.8} />
+                    <span style={{ fontSize: "12px", fontWeight: "700", color: i === 2 ? "#16a34a" : "#1a1a2e" }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ height: "1px", background: "#f3f4f6", margin: "16px 0" }} />
+
+            {/* Active message */}
+            <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", padding: "14px", background: "#f0fdf4", borderRadius: "14px", border: "1.5px solid #dcfce7", marginBottom: "20px" }}>
+              <div style={{ width: "38px", height: "38px", borderRadius: "10px", background: "#dcfce7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Icon d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" size={18} color="#16a34a" />
+              </div>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: "700", color: "#1a1a2e", marginBottom: "2px" }}>Your account is now active.</div>
+                <div style={{ fontSize: "12px", color: "#6b7280", lineHeight: "1.5" }}>You can start managing your medicines and health schedule.</div>
+              </div>
+            </div>
+
+            <button onClick={onEnterApp}
+              style={{ width: "100%", padding: "15px", border: "none", borderRadius: "14px", fontSize: "15px", fontWeight: "700", fontFamily: "inherit", cursor: "pointer", background: T.teal, color: "#fff", boxShadow: "0 4px 18px rgba(15,155,142,0.38)", display: "flex", alignItems: "center", justifyContent: "space-between", transition: "all 0.2s" }}>
+              <span />
+              <span>Go to Dashboard</span>
+              <Icon d="M5 12h14 M12 5l7 7-7 7" size={18} color="#fff" />
+            </button>
+          </div>
+
+          <div style={{ height: "28px" }} />
         </div>
       </div>
     </div>
