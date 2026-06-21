@@ -89,12 +89,7 @@ export default function AuthScreen({ onAuth }) {
 
   const isSignup = mode === "signup";
 
-  const wave = (
-    <svg viewBox="0 0 400 80" xmlns="http://www.w3.org/2000/svg" style={{ position: "absolute", bottom: 0, left: 0, width: "100%", pointerEvents: "none" }}>
-      <path d="M0,40 C80,80 160,0 240,40 C320,80 380,20 400,40 L400,80 L0,80 Z" fill={T.tealLight} opacity="0.8"/>
-      <path d="M0,55 C60,30 140,70 220,50 C300,30 360,65 400,55 L400,80 L0,80 Z" fill={T.tealLight} opacity="0.5"/>
-    </svg>
-  );
+
 
   return (
     <div style={{ minHeight: "100vh", background: "#f5f7fa", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px", fontFamily: "'Segoe UI', system-ui, sans-serif" }}>
@@ -122,7 +117,7 @@ export default function AuthScreen({ onAuth }) {
                 <div style={{ fontSize: "12px", color: T.muted, marginTop: "1px" }}>Track. Schedule. Stay Healthy.</div>
               </div>
             </div>
-            {wave}
+    
           </div>
 
           {/* Form section */}
